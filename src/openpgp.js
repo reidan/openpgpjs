@@ -82,6 +82,34 @@ function encryptMessage(keys, text) {
   }, 'Error encrypting message!');
 }
 
+
+/**
+ * Encrypts message text with keys and applies filename.  Note: if using web workers, it will default to legacy msg.txt filename
+ * @param  {(Array<module:key~Key>|module:key~Key)}  keys array of keys or single key, used to encrypt the message
+ * @param  {String} text message as native JavaScript string
+ * @param  {String} text filename as native JavaScript string
+ * @return {Promise<String>}      encrypted ASCII armored message
+ * @static
+ */
+function encryptMessage(keys, text, filename) {
+  if (!keys.length) {
+    keys = [keys];
+  }
+
+  if (useWorker()) {
+    return asyncProxy.encryptMessage(keys, text);
+  }
+
+  return execute(function() {
+    var msg, armored;
+    msg = message.fromText(text, filename);
+    msg = msg.encrypt(keys);
+    armored = armor.encode(enums.armor.message, msg.packets.write());
+    return armored;
+
+  }, 'Error encrypting message!');
+}
+
 /**
  * Signs message text and encrypts it
  * @param  {(Array<module:key~Key>|module:key~Key)}  publicKeys array of keys or single key, used to encrypt the message
