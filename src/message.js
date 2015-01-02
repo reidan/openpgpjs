@@ -325,6 +325,24 @@ function fromText(text) {
 }
 
 /**
+ * creates new message object from text and applies a user specified filename
+ * @param {String} text
+ * @param {String} filename
+ * @return {module:message~Message} new message object
+ * @static
+ */
+function fromTextWithFilename(text, filename) {
+  var literalDataPacket = new packet.Literal();
+  // text will be converted to UTF8
+  literalDataPacket.setText(text);
+  literalDataPacket.setFilename(filename);
+  var literalDataPacketlist = new packet.List();
+  literalDataPacketlist.push(literalDataPacket);
+  var newMessage = new Message(literalDataPacketlist);
+  return newMessage;
+}
+
+/**
  * creates new message object from binary data
  * @param {String} bytes
  * @return {module:message~Message} new message object
