@@ -91,7 +91,7 @@ function encryptMessage(keys, text) {
  * @return {Promise<String>}      encrypted ASCII armored message
  * @static
  */
-function encryptMessage(keys, text, filename) {
+function encryptMessageWithFilename(keys, text, filename) {
   if (!keys.length) {
     keys = [keys];
   }
@@ -102,7 +102,7 @@ function encryptMessage(keys, text, filename) {
 
   return execute(function() {
     var msg, armored;
-    msg = message.fromText(text, filename);
+    msg = message.fromTextWithFilename(text, filename);
     msg = msg.encrypt(keys);
     armored = armor.encode(enums.armor.message, msg.packets.write());
     return armored;
@@ -336,6 +336,7 @@ function onError(message, error) {
 
 exports.initWorker = initWorker;
 exports.encryptMessage = encryptMessage;
+exports.encryptMessageWithFilename = encryptMessageWithFilename;
 exports.signAndEncryptMessage = signAndEncryptMessage;
 exports.decryptMessage = decryptMessage;
 exports.decryptAndVerifyMessage = decryptAndVerifyMessage;

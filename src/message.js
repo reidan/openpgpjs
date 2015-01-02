@@ -361,4 +361,5 @@ exports.Message = Message;
 exports.readArmored = readArmored;
 exports.readSignedContent = readSignedContent;
 exports.fromText = fromText;
+exports.fromTextWithFilename = fromTextWithFilename;
 exports.fromBinary = fromBinary;
