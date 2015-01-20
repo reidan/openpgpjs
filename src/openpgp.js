@@ -139,6 +139,34 @@ function signAndEncryptMessage(publicKeys, privateKey, text) {
 }
 
 /**
+ * Signs message text and encrypts it
+ * @param  {(Array<module:key~Key>|module:key~Key)}  publicKeys array of keys or single key, used to encrypt the message
+ * @param  {module:key~Key}    privateKey private key with decrypted secret key data for signing
+ * @param  {String} text       message as native JavaScript string
+ * @return {Promise<String>}   encrypted ASCII armored message
+ * @static
+ */
+function signAndEncryptMessageWithFilename(publicKeys, privateKey, text, filename) {
+  if (!publicKeys.length) {
+    publicKeys = [publicKeys];
+  }
+
+  if (useWorker()) {
+    return asyncProxy.signAndEncryptMessage(publicKeys, privateKey, text);
+  }
+
+  return execute(function() {
+    var msg, armored;
+    msg = message.fromTextWithFilename(text, filename);
+    msg = msg.sign([privateKey]);
+    msg = msg.encrypt(publicKeys);
+    armored = armor.encode(enums.armor.message, msg.packets.write());
+    return armored;
+
+  }, 'Error signing and encrypting message!');
+}
+
+/**
  * Decrypts message
  * @param  {module:key~Key}                privateKey private key with decrypted secret key data
  * @param  {module:message~Message} msg    the message object with the encrypted data
@@ -338,6 +366,7 @@ exports.initWorker = initWorker;
 exports.encryptMessage = encryptMessage;
 exports.encryptMessageWithFilename = encryptMessageWithFilename;
 exports.signAndEncryptMessage = signAndEncryptMessage;
+exports.signAndEncryptMessageWithFilename = signAndEncryptMessageWithFilename;
 exports.decryptMessage = decryptMessage;
 exports.decryptAndVerifyMessage = decryptAndVerifyMessage;
 exports.signClearMessage = signClearMessage;
